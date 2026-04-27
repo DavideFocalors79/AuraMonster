@@ -6,932 +6,571 @@
 <title>AURA MONSTER</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --bg2: #111118;
-    --bg3: #1a1a25;
-    --purple: #7c5cbf;
-    --purple-bright: #a67fff;
-    --cyan: #00d4ff;
-    --gold: #f5c518;
-    --red: #ff3b3b;
-    --green: #00ff88;
-    --text: #e8e8f0;
-    --muted: #666680;
-    --border: #2a2a3a;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans JP', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  .scanlines {
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 3px,
-      rgba(0,0,0,0.08) 3px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-    z-index: 1000;
-  }
-
-  .container {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 20px;
-    position: relative;
-  }
-
-  /* HEADER */
-  .header {
-    text-align: center;
-    padding: 30px 0 20px;
-    position: relative;
-  }
-
-  .title-main {
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: 56px;
-    letter-spacing: 4px;
-    color: var(--purple-bright);
-    text-shadow: 0 0 0px;
-    line-height: 1;
-    animation: flicker 6s infinite;
-  }
-
-  .title-sub {
-    font-size: 11px;
-    letter-spacing: 8px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-
-  @keyframes flicker {
-    0%, 94%, 98%, 100% { opacity: 1; }
-    95% { opacity: 0.7; }
-    97% { opacity: 0.85; }
-  }
-
-  /* AURA DISPLAY */
-  .aura-display {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 20px;
-    margin: 20px 0;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .aura-display::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--purple);
-    transition: background 0.5s;
-  }
-
-  .aura-display.positive::before { background: var(--purple-bright); }
-  .aura-display.negative::before { background: var(--red); }
-  .aura-display.elite::before { background: var(--gold); }
-
-  .aura-label {
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .aura-number {
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: 72px;
-    line-height: 1;
-    transition: color 0.3s;
-    color: var(--purple-bright);
-  }
-
-  .aura-number.negative { color: var(--red); }
-  .aura-number.elite { color: var(--gold); }
-
-  .aura-rank {
-    font-size: 13px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    margin-top: 8px;
-    text-transform: uppercase;
-    transition: color 0.3s;
-  }
-
-  /* PROGRESS BAR */
-  .progress-wrap {
-    margin: 12px 0 0;
-    background: var(--bg3);
-    border-radius: 2px;
-    height: 4px;
-    overflow: hidden;
-  }
-
-  .progress-bar {
-    height: 100%;
-    background: var(--purple);
-    transition: width 0.5s ease, background 0.3s;
-    border-radius: 2px;
-  }
-
-  .progress-bar.negative { background: var(--red); }
-  .progress-bar.elite { background: var(--gold); }
-
-  /* POPUP NUMBERS */
-  .popup-container {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 999;
-  }
-
-  .popup {
-    position: absolute;
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: 36px;
-    font-weight: 900;
-    animation: popupAnim 1.4s ease forwards;
-    pointer-events: none;
-  }
-
-  .popup.gain { color: var(--purple-bright); }
-  .popup.lose { color: var(--red); }
-  .popup.big { font-size: 52px; color: var(--gold); }
-
-  @keyframes popupAnim {
-    0% { opacity: 1; transform: translateY(0) scale(0.5); }
-    20% { transform: translateY(-20px) scale(1.2); }
-    60% { opacity: 1; transform: translateY(-60px) scale(1); }
-    100% { opacity: 0; transform: translateY(-100px) scale(0.8); }
-  }
-
-  /* SCENARIO CARD */
-  .scenario-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 28px;
-    margin: 20px 0;
-    min-height: 200px;
-    transition: all 0.3s;
-  }
-
-  .scenario-card.stairs {
-    border-color: var(--gold);
-    animation: stairsPulse 1.5s infinite;
-  }
-
-  @keyframes stairsPulse {
-    0%, 100% { border-color: var(--gold); }
-    50% { border-color: #ff8c00; }
-  }
-
-  .scenario-tag {
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-
-  .scenario-tag.event { color: var(--gold); }
-  .scenario-tag.stairs-tag { color: var(--gold); font-size: 11px; letter-spacing: 5px; }
-
-  .scenario-text {
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--text);
-    margin-bottom: 24px;
-  }
-
-  .scenario-text strong {
-    color: var(--purple-bright);
-    font-weight: 700;
-  }
-
-  /* CHOICES */
-  .choices {
-    display: grid;
-    gap: 10px;
-  }
-
-  .choice-btn {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 14px 18px;
-    color: var(--text);
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.15s;
-    position: relative;
-  }
-
-  .choice-btn:hover {
-    border-color: var(--purple);
-    background: #1e1e2e;
-    transform: translateX(4px);
-  }
-
-  .choice-btn:active { transform: translateX(2px) scale(0.99); }
-
-  .choice-btn .choice-label {
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  .choice-btn.stairs-choice { border-color: var(--gold); }
-  .choice-btn.stairs-choice:hover { border-color: #ff8c00; background: #1a1500; }
-
-  /* RESULT DISPLAY */
-  .result-display {
-    display: none;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 24px;
-    margin: 20px 0;
-    text-align: center;
-    animation: resultIn 0.3s ease;
-  }
-
-  @keyframes resultIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-  }
-
-  .result-display.visible { display: block; }
-
-  .result-verdict {
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: 28px;
-    margin-bottom: 8px;
-  }
-
-  .result-verdict.sigma { color: var(--purple-bright); }
-  .result-verdict.cringe { color: var(--red); }
-  .result-verdict.god { color: var(--gold); }
-
-  .result-aura-change {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  .result-flavor {
-    font-size: 13px;
-    color: var(--muted);
-    font-style: italic;
-    margin-bottom: 20px;
-    line-height: 1.6;
-  }
-
-  .next-btn {
-    background: var(--purple);
-    border: none;
-    border-radius: 4px;
-    color: white;
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: 16px;
-    letter-spacing: 2px;
-    padding: 12px 32px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .next-btn:hover { background: var(--purple-bright); transform: scale(1.03); }
-  .next-btn:active { transform: scale(0.98); }
-
-  /* STATS BAR */
-  .stats-bar {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    margin: 20px 0;
-  }
-
-  .stat-item {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 12px;
-    text-align: center;
-  }
-
-  .stat-value {
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: 22px;
-    color: var(--purple-bright);
-  }
-
-  .stat-label {
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-
-  /* GAME OVER / WIN */
-  .endscreen {
-    display: none;
-    background: var(--bg2);
-    border: 1px solid var(--gold);
-    border-radius: 4px;
-    padding: 40px;
-    margin: 20px 0;
-    text-align: center;
-  }
-
-  .endscreen.visible { display: block; }
-
-  .end-title {
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: 48px;
-    color: var(--gold);
-    letter-spacing: 3px;
-    animation: breathe 2s infinite;
-  }
-
-  @keyframes breathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.03); }
-  }
-
-  .end-subtitle {
-    font-size: 14px;
-    color: var(--muted);
-    margin: 10px 0 24px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  .end-stats {
-    font-size: 16px;
-    color: var(--text);
-    margin-bottom: 28px;
-    line-height: 2;
-  }
-
-  .restart-btn {
-    background: transparent;
-    border: 1px solid var(--gold);
-    border-radius: 4px;
-    color: var(--gold);
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: 16px;
-    letter-spacing: 2px;
-    padding: 12px 32px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .restart-btn:hover { background: var(--gold); color: var(--bg); }
-
-  /* STAIRS SEQUENCE */
-  .stairs-sequence {
-    display: none;
-  }
-
-  .stairs-sequence.visible { display: block; }
-
-  .stairs-text {
-    font-size: 15px;
-    line-height: 2;
-    color: var(--text);
-    padding: 20px 0;
-    border-left: 2px solid var(--purple);
-    padding-left: 20px;
-    margin: 16px 0;
-  }
-
-  .stairs-step {
-    opacity: 0;
-    transition: opacity 0.8s;
-  }
-
-  .stairs-step.visible { opacity: 1; }
-
-  /* TICKER */
-  .ticker {
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-    text-align: center;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-    animation: tickerScroll 20s linear infinite;
-  }
-
-  /* AURA MONSTER FACE ASCII */
-  .monster-art {
-    font-family: monospace;
-    font-size: 11px;
-    color: var(--purple-bright);
-    line-height: 1.4;
-    margin: 16px 0;
-    text-align: center;
-  }
-
-  .shake {
-    animation: shake 0.4s ease;
-  }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-6px); }
-    80% { transform: translateX(6px); }
-  }
-
-  /* SCROLL hint */
-  .scroll-hint {
-    text-align: center;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    margin: 8px 0;
-  }
+:root {
+  --bg: #09090e;
+  --bg2: #101018;
+  --bg3: #181825;
+  --purple: #6e4fc4;
+  --purple-bright: #a67fff;
+  --gold: #f0b429;
+  --gold-dim: #7a5d0e;
+  --red: #e83535;
+  --red-dim: #7a1c1c;
+  --text: #ddddf0;
+  --muted: #55556e;
+  --border: #222235;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans JP',sans-serif; min-height:100vh; overflow-x:hidden; }
+.scanlines { position:fixed; inset:0; pointer-events:none; z-index:1000; background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px); }
+.popup-layer { position:fixed; inset:0; pointer-events:none; z-index:998; }
+.popup { position:absolute; font-family:'Black Han Sans',sans-serif; font-size:32px; pointer-events:none; animation:popUp 1.6s ease forwards; }
+.popup.gain { color:var(--purple-bright); }
+.popup.lose { color:var(--red); }
+.popup.huge { font-size:50px; color:var(--gold); }
+@keyframes popUp { 0%{opacity:1;transform:translateY(0) scale(0.6)} 20%{transform:translateY(-24px) scale(1.25)} 65%{opacity:1;transform:translateY(-70px) scale(1)} 100%{opacity:0;transform:translateY(-110px) scale(0.85)} }
+.wrap { max-width:660px; margin:0 auto; padding:16px 20px 60px; }
+.hdr { text-align:center; padding:28px 0 16px; }
+.hdr-title { font-family:'Black Han Sans',sans-serif; font-size:58px; letter-spacing:5px; color:var(--purple-bright); line-height:1; animation:flicker 9s infinite; }
+@keyframes flicker { 0%,91%,95%,100%{opacity:1} 93%{opacity:0.6} 94%{opacity:0.9} }
+.hdr-sub { font-size:10px; letter-spacing:6px; color:var(--muted); text-transform:uppercase; margin-top:5px; }
+.aura-box { background:var(--bg2); border:1px solid var(--border); border-top:2px solid var(--purple); border-radius:4px; padding:20px 24px 16px; margin:16px 0; text-align:center; transition:border-top-color 0.4s; }
+.aura-box.neg { border-top-color:var(--red); }
+.aura-box.elite { border-top-color:var(--gold); }
+.aura-label { font-size:9px; letter-spacing:4px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.aura-num { font-family:'Black Han Sans',sans-serif; font-size:76px; line-height:1; color:var(--purple-bright); transition:color 0.3s; }
+.aura-num.neg { color:var(--red); }
+.aura-num.elite { color:var(--gold); }
+.aura-rank { font-size:12px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-top:7px; transition:color 0.3s; }
+.prog-wrap { height:3px; background:var(--bg3); border-radius:2px; margin-top:14px; overflow:hidden; }
+.prog-bar { height:100%; border-radius:2px; background:var(--purple); transition:width 0.5s ease,background 0.3s; }
+.prog-bar.neg { background:var(--red); }
+.prog-bar.elite { background:var(--gold); }
+.stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:12px 0; }
+.stat { background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:10px; text-align:center; }
+.stat-val { font-family:'Black Han Sans',sans-serif; font-size:22px; color:var(--purple-bright); }
+.stat-lbl { font-size:8px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-top:2px; }
+.card { background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:26px; margin:14px 0; transition:border-color 0.4s; }
+.card.stairs-card { border-color:var(--gold); animation:goldPulse 2s infinite; }
+@keyframes goldPulse { 0%,100%{border-color:var(--gold)} 50%{border-color:var(--gold-dim)} }
+.card-tag { font-size:9px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
+.card-tag.gold { color:var(--gold); font-size:11px; letter-spacing:5px; }
+.card-text { font-size:15px; line-height:1.8; color:var(--text); margin-bottom:22px; }
+.card-text strong { color:var(--purple-bright); }
+.choices { display:grid; gap:8px; grid-template-columns:1fr 1fr; }
+@media(max-width:500px) { .choices { grid-template-columns:1fr; } }
+.choice { background:var(--bg3); border:1px solid var(--border); border-radius:4px; padding:13px 16px; color:var(--text); font-family:'Noto Sans JP',sans-serif; font-size:13px; cursor:pointer; text-align:left; transition:all 0.15s; }
+.choice:hover { border-color:var(--purple); background:#1c1c2c; transform:translateX(3px); }
+.choice:active { transform:translateX(1px) scale(0.99); }
+.choice.sc { border-color:var(--gold-dim); }
+.choice.sc:hover { border-color:var(--gold); background:#1a1500; }
+.choice-lbl { font-size:8px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:4px; }
+.result { display:none; background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:24px; margin:14px 0; text-align:center; animation:fadeIn 0.25s ease; }
+@keyframes fadeIn { from{opacity:0;transform:scale(0.96)} to{opacity:1;transform:scale(1)} }
+.result.show { display:block; }
+.r-verdict { font-family:'Black Han Sans',sans-serif; font-size:30px; margin-bottom:6px; }
+.r-verdict.s { color:var(--purple-bright); }
+.r-verdict.c { color:var(--red); }
+.r-verdict.g { color:var(--gold); }
+.r-delta { font-size:14px; margin-bottom:6px; }
+.r-flavor { font-size:13px; color:var(--muted); font-style:italic; margin-bottom:20px; line-height:1.7; }
+.next-btn { background:var(--purple); border:none; border-radius:4px; color:#fff; font-family:'Black Han Sans',sans-serif; font-size:15px; letter-spacing:2px; padding:11px 30px; cursor:pointer; transition:all 0.15s; }
+.next-btn:hover { background:var(--purple-bright); transform:scale(1.04); }
+.next-btn:active { transform:scale(0.97); }
+.stairs-seq { display:none; }
+.stairs-seq.show { display:block; }
+.stairs-block { padding:28px; background:var(--bg2); border:1px solid var(--border); border-radius:4px; margin:14px 0; }
+.sl { font-size:15px; line-height:2; color:var(--text); opacity:0; transform:translateY(6px); transition:opacity 0.7s ease,transform 0.7s ease; display:block; margin-bottom:2px; }
+.sl.vis { opacity:1; transform:translateY(0); }
+.sl.em { color:var(--gold); font-size:17px; }
+.sl.red { color:var(--red); }
+.sl.pur { color:var(--purple-bright); font-style:italic; }
+.sl.big { font-family:'Black Han Sans',sans-serif; font-size:24px; letter-spacing:2px; color:var(--gold); }
+.sl.sm { font-size:12px; letter-spacing:1px; color:var(--muted); font-style:italic; }
+.end { display:none; background:var(--bg2); border:1px solid var(--gold); border-radius:4px; padding:44px 32px; margin:14px 0; text-align:center; }
+.end.show { display:block; }
+.end.bad { border-color:var(--red); }
+.end-title { font-family:'Black Han Sans',sans-serif; font-size:52px; color:var(--gold); letter-spacing:4px; animation:breathe 2.5s infinite; }
+.end.bad .end-title { color:var(--red); animation:none; }
+@keyframes breathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+.end-art { font-family:monospace; font-size:12px; line-height:1.5; margin:18px 0; color:var(--purple-bright); }
+.end-sub { font-size:11px; letter-spacing:4px; color:var(--muted); text-transform:uppercase; margin-bottom:20px; }
+.end-stats { font-size:15px; line-height:2.2; color:var(--text); margin-bottom:28px; }
+.restart { background:transparent; border:1px solid var(--gold); border-radius:4px; color:var(--gold); font-family:'Black Han Sans',sans-serif; font-size:15px; letter-spacing:2px; padding:11px 30px; cursor:pointer; transition:all 0.15s; }
+.restart:hover { background:var(--gold); color:var(--bg); }
+.end.bad .restart { border-color:var(--red); color:var(--red); }
+.end.bad .restart:hover { background:var(--red); color:var(--bg); }
+.ticker { font-size:9px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; text-align:center; margin-top:28px; padding-top:18px; border-top:1px solid var(--border); }
+.shake { animation:shk 0.4s ease; }
+@keyframes shk { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-9px)} 40%{transform:translateX(9px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
 </style>
 </head>
 <body>
 <div class="scanlines"></div>
-<div class="popup-container" id="popupContainer"></div>
-
-<div class="container">
-
-  <div class="header">
-    <div class="title-main">AURA MONSTER</div>
-    <div class="title-sub">sigma aura farming simulator · re:zero edition</div>
+<div class="popup-layer" id="popupLayer"></div>
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-title">AURA MONSTER</div>
+    <div class="hdr-sub">sigma aura farming simulator · re:zero edition</div>
   </div>
-
-  <!-- AURA DISPLAY -->
-  <div class="aura-display" id="auraDisplay">
+  <div class="aura-box" id="auraBox">
     <div class="aura-label">aura points</div>
-    <div class="aura-number" id="auraNumber">0</div>
+    <div class="aura-num" id="auraNum">0</div>
     <div class="aura-rank" id="auraRank">⊹ AURA PEASANT ⊹</div>
-    <div class="progress-wrap">
-      <div class="progress-bar" id="progressBar" style="width: 5%"></div>
-    </div>
+    <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:3%"></div></div>
   </div>
-
-  <!-- STATS -->
-  <div class="stats-bar">
-    <div class="stat-item">
-      <div class="stat-value" id="statRound">1</div>
-      <div class="stat-label">round</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-value" id="statSigma">0</div>
-      <div class="stat-label">sigma moves</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-value" id="statCringe">0</div>
-      <div class="stat-label">cringe fails</div>
-    </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="stRound">1</div><div class="stat-lbl">round</div></div>
+    <div class="stat"><div class="stat-val" id="stSigma">0</div><div class="stat-lbl">mosse sigma</div></div>
+    <div class="stat"><div class="stat-val" id="stCringe">0</div><div class="stat-lbl">fallimenti</div></div>
   </div>
-
-  <!-- SCENARIO CARD -->
-  <div class="scenario-card" id="scenarioCard">
-    <div class="scenario-tag" id="scenarioTag">— SITUAZIONE —</div>
-    <div class="scenario-text" id="scenarioText">Loading...</div>
-    <div class="choices" id="choicesContainer"></div>
+  <div class="card" id="mainCard">
+    <div class="card-tag" id="cardTag">— SITUAZIONE —</div>
+    <div class="card-text" id="cardText"></div>
+    <div class="choices" id="choicesBox"></div>
   </div>
-
-  <!-- RESULT DISPLAY -->
-  <div class="result-display" id="resultDisplay">
-    <div class="result-verdict" id="resultVerdict">SIGMA</div>
-    <div class="result-aura-change" id="resultAuraChange"></div>
-    <div class="result-flavor" id="resultFlavor"></div>
-    <button class="next-btn" id="nextBtn" onclick="nextScenario()">PROSSIMA SITUAZIONE →</button>
+  <div class="result" id="resultBox">
+    <div class="r-verdict" id="rVerdict"></div>
+    <div class="r-delta" id="rDelta"></div>
+    <div class="r-flavor" id="rFlavor"></div>
+    <button class="next-btn" onclick="nextRound()">PROSSIMA SITUAZIONE →</button>
   </div>
-
-  <!-- STAIRS SEQUENCE -->
-  <div class="stairs-sequence" id="stairsSequence">
-    <div class="stairs-text">
-      <div class="stairs-step" id="ss1">Vedi delle scale.</div>
-      <div class="stairs-step" id="ss2">Le scale sono lunghe.</div>
-      <div class="stairs-step" id="ss3">Inizi a salire. Un gradino. Due gradini. Tre gradini.</div>
-      <div class="stairs-step" id="ss4">L'aria si fa pesante. Qualcosa non va.</div>
-      <div class="stairs-step" id="ss5">⚠ Senti la sua aura.</div>
-      <div class="stairs-step" id="ss6">È un'<strong style="color:var(--gold)">AURA MONSTER</strong>.</div>
-      <div class="stairs-step" id="ss7" style="color:var(--red)">Il tuo cuore si ferma un momento.</div>
-      <div class="stairs-step" id="ss8" style="color:var(--purple-bright);font-size:13px">Ma tu non sei una persona normale.</div>
-    </div>
+  <div class="stairs-seq" id="stairsSeq">
+    <div class="stairs-block" id="stairsBlock"></div>
   </div>
-
-  <!-- END SCREEN -->
-  <div class="endscreen" id="endScreen">
-    <div class="end-title" id="endTitle">AURA MONSTER</div>
-    <div class="monster-art" id="monsterArt"></div>
-    <div class="end-subtitle" id="endSubtitle"></div>
+  <div class="end" id="endScreen">
+    <div class="end-title" id="endTitle"></div>
+    <div class="end-art" id="endArt"></div>
+    <div class="end-sub" id="endSub"></div>
     <div class="end-stats" id="endStats"></div>
-    <button class="restart-btn" onclick="restartGame()">↺ RICOMINCIA</button>
+    <button class="restart" onclick="restart()">↺ RICOMINCIA</button>
   </div>
-
-  <div class="ticker">
-    ✦ FARM YOUR AURA ✦ SUBARU APPROVED ✦ CERTIFIED SIGMA ✦ RE:ZERO ✦ AURA MONSTER ✦ NO CRINGE ALLOWED ✦ THE STAIRS AWAIT ✦
-  </div>
-
+  <div class="ticker">✦ FARM YOUR AURA ✦ NO CRINGE ALLOWED ✦ SUBARU APPROVED ✦ LE SCALE ASPETTANO ✦ SIGMA ONLY ✦</div>
 </div>
 
 <script>
-const RANKS = [
-  { min: -Infinity, max: -5000, label: "☠ NPC ASSOLUTO ☠", cls: "negative" },
-  { min: -5000, max: -1500, label: "▼ CRINGE TOTALE ▼", cls: "negative" },
-  { min: -1500, max: 0, label: "⚠ AURA NEGATIVA ⚠", cls: "negative" },
-  { min: 0, max: 1000, label: "⊹ AURA PEASANT ⊹", cls: "" },
-  { min: 1000, max: 3000, label: "◈ AURA APPRENTICE ◈", cls: "" },
-  { min: 3000, max: 6000, label: "◆ AURA KNIGHT ◆", cls: "" },
-  { min: 6000, max: 10000, label: "✦ AURA LORD ✦", cls: "positive" },
-  { min: 10000, max: 15000, label: "⬡ AURA OVERLORD ⬡", cls: "positive" },
-  { min: 15000, max: Infinity, label: "⚡ AURA MONSTER ⚡", cls: "elite" },
+const RANKS=[
+  {min:-Infinity,max:-6000,label:"☠ NPC ASSOLUTO ☠",cls:"neg"},
+  {min:-6000,max:-2000,label:"▼ CRINGE TOTALE ▼",cls:"neg"},
+  {min:-2000,max:0,label:"⚠ AURA NEGATIVA ⚠",cls:"neg"},
+  {min:0,max:1500,label:"⊹ AURA PEASANT ⊹",cls:""},
+  {min:1500,max:4000,label:"◈ AURA APPRENTICE ◈",cls:""},
+  {min:4000,max:8000,label:"◆ AURA KNIGHT ◆",cls:""},
+  {min:8000,max:13000,label:"✦ AURA LORD ✦",cls:""},
+  {min:13000,max:20000,label:"⬡ AURA OVERLORD ⬡",cls:"elite"},
+  {min:20000,max:Infinity,label:"⚡ AURA MONSTER ⚡",cls:"elite"}
 ];
 
-const scenarios = [
+const POOL=[
+  {tag:"— SITUAZIONE SOCIALE —",text:'Sei al bar. La persona davanti a te prende <strong>l\'ultimo cornetto</strong> guardandoti in faccia.',
+   choices:[
+    {text:"La fissi per 5 secondi interi, poi ordini un caffè come se niente fosse",sigma:true,aura:1400,verdict:"SIGMA",flavor:"Non hai detto una parola. Non ne avevi bisogno."},
+    {text:"Sospiri così forte che tutti lo sentono, poi ordini acqua liscia",sigma:true,aura:800,verdict:"SIGMA PASSIVO",flavor:"Il sospiro parlava per te. Eloquente."},
+    {text:"Sorridi e dici 'buon appetito!' con un pollice su",sigma:false,aura:-600,verdict:"NPC",flavor:"Il sorriso era falso. Lo sapeva anche lui."},
+    {text:"Chiedi al barista se ne ha altri, già sapendo la risposta",sigma:false,aura:-400,verdict:"CRINGE",flavor:"Hai creato imbarazzo per niente. Classico."}
+  ]},
+  {tag:"— SITUAZIONE COMUNICATIVA —",text:'Il tuo amico manda nel gruppo: <strong>"okay"</strong>. Solo quello. Nessun contesto.',
+   choices:[
+    {text:"Non rispondi. Per tre giorni.",sigma:true,aura:900,verdict:"SIGMA",flavor:"Lui sa cosa ha fatto. Entrambi lo sapete."},
+    {text:"Metti solo 👍 e sparisci dal gruppo per ore",sigma:true,aura:600,verdict:"FREDDO",flavor:"Un pollice. Un'era glaciale."},
+    {text:"Rispondi 'tutto bene?? cos'è successo??' con tre punti interrogativi",sigma:false,aura:-700,verdict:"NPC",flavor:"Hai dimostrato di aver bisogno di contesto. Imbarazzante."},
+    {text:"Chiami direttamente per capire cosa intendesse",sigma:false,aura:-500,verdict:"CRINGE",flavor:"Si chiama con un messaggio ambiguo? No. Mai."}
+  ]},
+  {tag:"— SITUAZIONE GASTRONOMICA —",text:'Cammini per strada, cadi, e <strong>lasci cadere la pizza</strong>. C\'è gente intorno.',
+   choices:[
+    {text:"Raccogli la pizza. Continui a camminare. La mangi.",sigma:true,aura:2000,verdict:"ABSOLUTE MONSTER",flavor:"5 secondi rule è per i deboli. Tu non hai regole."},
+    {text:"Fissi la pizza a terra 3 secondi, la raccogli con dignità, vai oltre",sigma:true,aura:1000,verdict:"SIGMA",flavor:"Il pavimento è solo un piatto con più carattere."},
+    {text:"Ti alzi imbarazzato, lasci la pizza lì e vai via in fretta",sigma:false,aura:-800,verdict:"CRINGE PURO",flavor:"Hai abbandonato la pizza. Lei non ti dimenticherà."},
+    {text:"Dici 'vabbè' ad alta voce e ordini subito un'altra su Deliveroo",sigma:false,aura:-400,verdict:"NPC",flavor:"Hai speso 4€ di delivery fee per nascondere l'imbarazzo."}
+  ]},
+  {tag:"— SITUAZIONE LAVORATIVA —",text:'Il tuo capo ti manda una mail: <strong>"ci sentiamo"</strong>. Nessuna ora. Nessun giorno.',
+   choices:[
+    {text:"Non rispondi. Lavori come se niente fosse. Sa dove trovarti.",sigma:true,aura:1500,verdict:"SIGMA",flavor:"Tu non corri dietro all'ambiguità. L'ambiguità corre da te."},
+    {text:"Rispondi solo 'ok' con la O minuscola",sigma:true,aura:900,verdict:"FREDDO",flavor:"Due lettere. Zero ansia trasmessa."},
+    {text:"Rispondi 'quando? sono libero praticamente sempre!'",sigma:false,aura:-900,verdict:"NPC AZIENDALE",flavor:"'Praticamente sempre' ha fatto scendere il tuo valore del 40%."},
+    {text:"Gli mandi subito una richiesta di riunione con calendario condiviso",sigma:false,aura:-600,verdict:"CRINGE",flavor:"Proattivo ma nel modo sbagliato. Molto sbagliato."}
+  ]},
+  {tag:"— SITUAZIONE ROMANTICA —",text:'Una persona che ti piace ti scrive: <strong>"che fai stasera?"</strong>',
+   choices:[
+    {text:"Aspetti 2 ore. Rispondi solo 'perché'.",sigma:true,aura:2500,verdict:"AURA LORD",flavor:"Un'unica parola. Tutto il potere del mondo."},
+    {text:"Aspetti 40 minuti. Rispondi 'niente di che, tu?'",sigma:true,aura:1200,verdict:"SIGMA",flavor:"Calibrato. Rilassato. Perfetto."},
+    {text:"Rispondi in 12 secondi: 'Niente dai, sono liberoooo!! Perché?? 😊'",sigma:false,aura:-1100,verdict:"NPC ROMANTICO",flavor:"Le emoji parlano. Hai detto troppo."},
+    {text:"Aspetti 30 secondi, poi scrivi un paragrafo sui tuoi piani della settimana",sigma:false,aura:-700,verdict:"CRINGE",flavor:"Nessuno ha chiesto il tuo calendario."}
+  ]},
+  {tag:"— SITUAZIONE CULINARIA —",text:'Al ristorante il cameriere chiede: <strong>"come la vuole la bistecca?"</strong>',
+   choices:[
+    {text:"'Al sangue.' Pausa. 'Grazie.'",sigma:true,aura:1100,verdict:"SIGMA",flavor:"Tre parole. Una pausa. Chef ti rispetta."},
+    {text:"'Al sangue' con contatto visivo diretto, senza altro",sigma:true,aura:800,verdict:"SOLIDO",flavor:"Conciso. Deciso. Nessun dubbio."},
+    {text:"'Ben cotta per favore, non mi piace il sangue per niente!'",sigma:false,aura:-1200,verdict:"CRINGE CULINARIO",flavor:"Hai perso 1200 aura e il rispetto dello chef."},
+    {text:"'Mmmh... media cottura? O forse ben cotta... anzi no, media'",sigma:false,aura:-900,verdict:"INDECISO",flavor:"Il cameriere ha scritto 'ben cotta' e se n'è andato."}
+  ]},
+  {tag:"— SITUAZIONE TECNICA —",text:'Il tuo PC <strong>esplode durante una presentazione</strong>. Tutti ti guardano.',
+   choices:[
+    {text:"Fissi lo schermo nero 5 secondi. Dici 'bene'. Continui a memoria.",sigma:true,aura:3500,verdict:"LEGGENDARIO",flavor:"Il crash era parte del piano. Era sempre stato parte del piano."},
+    {text:"Chiudi il PC. Apri il telefono. Continui da lì.",sigma:true,aura:2000,verdict:"SIGMA",flavor:"Hai avuto un piano B. Nessuno lo sapeva. Ora lo sa."},
+    {text:"Dici 'scusate, scusate, un momento, mi dispiace tanto...' tre volte",sigma:false,aura:-900,verdict:"CRINGE TOTALE",flavor:"Ogni 'scusate' valeva -300 aura. Matematica crudele."},
+    {text:"Ridi nervosamente e dici 'tipico del mio pc lol'",sigma:false,aura:-600,verdict:"NPC",flavor:"Il 'lol' detto a voce è il segno di resa definitivo."}
+  ]},
+  {tag:"— SITUAZIONE ECONOMICA —",text:'Al supermercato la carta viene <strong>rifiutata</strong>. C\'è la fila.',
+   choices:[
+    {text:"Guardi il POS. Guardi la cassiera. Dici 'riprovo'. Funziona.",sigma:true,aura:800,verdict:"SIGMA",flavor:"Calmo. Sempre calmo. L'aura non si perde per un POS."},
+    {text:"'Strano.' Estrai un'altra carta senza cambiare espressione.",sigma:true,aura:1100,verdict:"MULTI-CARTA",flavor:"Hai una carta di riserva. E un'espressione di granito."},
+    {text:"Ti scusi mille volte cercando contanti sudando",sigma:false,aura:-700,verdict:"NPC FINANZIARIO",flavor:"La fila ti ha giudicato. Anche il bambino di 4 anni."},
+    {text:"Dici 'vabbè lascio tutto' e esci senza comprare niente",sigma:false,aura:-500,verdict:"RESA TOTALE",flavor:"Hai lasciato la spesa. La spesa non tornerà da te."}
+  ]},
+  {tag:"— SITUAZIONE NOTTURNA —",text:'Sono le 4 di mattina. Pensi a una cosa imbarazzante detta <strong>nel 2016</strong>.',
+   choices:[
+    {text:"Ti alzi. Bevi acqua. Pensi: 'quella persona non esiste più'. Dormi.",sigma:true,aura:2200,verdict:"SIGMA MENTALE",flavor:"Chi eri nel 2016 è irrilevante. Sei un essere di aura ora."},
+    {text:"Scrivi la cosa su un foglio. La bruci mentalmente. Dormi.",sigma:true,aura:1400,verdict:"RITUALE",flavor:"Il rituale non era necessario. Ma era sigma farlo comunque."},
+    {text:"Ti rigiri nel letto per 3 ore in agonia pura",sigma:false,aura:-1500,verdict:"NPC ESISTENZIALE",flavor:"Il 2016 ti sta vivendo affitto gratis nella testa."},
+    {text:"Apri i social per distoglierti e guardi meme fino alle 7",sigma:false,aura:-800,verdict:"CRINGE CRONICO",flavor:"Hai risolto l'ansia con più ansia. Strategia discutibile."}
+  ]},
+  {tag:"⚔ — CONFRONTO DIRETTO —",text:'Un tizio con un\'<strong>aura enorme</strong> ti fissa dall\'altro lato della stanza. Non dice niente.',
+   choices:[
+    {text:"Lo fissi per 7 secondi. Annuisci di un millimetro. Ti giri.",sigma:true,aura:4000,verdict:"AURA DUEL WIN",flavor:"Nessuno ha parlato. Tutto è stato detto. Rispetto."},
+    {text:"Sorridi appena con un angolo della bocca. Torni a quello che facevi.",sigma:true,aura:2500,verdict:"FREDDO SIGMA",flavor:"Il mezzo sorriso era un'intera frase."},
+    {text:"Abbassi lo sguardo e ti allontani verso il muro opposto",sigma:false,aura:-2000,verdict:"SCONFITTO",flavor:"Ha vinto senza muovere un muscolo. La tua aura l'ha sentito."},
+    {text:"Fai finta di guardare il telefono per evitare il contatto visivo",sigma:false,aura:-1200,verdict:"NPC",flavor:"Lo schermo era spento. Lui lo sapeva."}
+  ]},
+  {tag:"— SITUAZIONE GYM —",text:'In palestra un tizio occupa <strong>tre macchine contemporaneamente</strong> con gli asciugamani.',
+   choices:[
+    {text:"Ti alleni accanto a lui senza chiedere. In silenzio. Il doppio dei pesi.",sigma:true,aura:3000,verdict:"AURA OVERLORD",flavor:"Non hai chiesto permesso. Non ne hai bisogno."},
+    {text:"Prendi un asciugamano da una delle sue macchine senza dire niente.",sigma:true,aura:2000,verdict:"SIGMA",flavor:"Hai comunicato senza comunicare. Masterclass."},
+    {text:"Aspetti che finisca su una panca di plastica in fondo",sigma:false,aura:-900,verdict:"NPC DA GYM",flavor:"Lui ha vinto. Tu hai perso. Non un muscolo: aura."},
+    {text:"Gli chiedi educatamente se puoi usarne una, sorridente",sigma:false,aura:-500,verdict:"TROPPO UMANO",flavor:"'Educatamente sorridente' in palestra è una dichiarazione di debolezza."}
+  ]},
+  {tag:"— SITUAZIONE SOCIAL MEDIA —",text:'Qualcuno ti tagga in un meme imbarazzante di <strong>7 anni fa</strong>.',
+   choices:[
+    {text:"Metti un like alla foto. Poi non ci pensi più.",sigma:true,aura:1800,verdict:"SIGMA",flavor:"Non puoi perdere la faccia se non ce l'hai nell'equazione."},
+    {text:"Rispondi con un altro meme ancora più imbarazzante su te stesso.",sigma:true,aura:2200,verdict:"META-SIGMA",flavor:"Hai escalato il cringe fino a trasformarlo in potere."},
+    {text:"Chiedi in DM di rimuoverlo immediatamente",sigma:false,aura:-700,verdict:"CRINGE",flavor:"La richiesta privata crea più imbarazzo del meme."},
+    {text:"Scrivi nei commenti 'lol ma ero giovane dai ragazzi 😅😅'",sigma:false,aura:-900,verdict:"NPC",flavor:"Le emoji di sudore valgono -300 aura ciascuna."}
+  ]},
+  {tag:"— SITUAZIONE METEOROLOGICA —",text:'Sei fuori. Inizia a piovere. <strong>Non hai l\'ombrello</strong>.',
+   choices:[
+    {text:"Continui a camminare al passo normale. La pioggia è solo acqua.",sigma:true,aura:1600,verdict:"SIGMA",flavor:"Non hai accelerato. Il passo era già quello giusto."},
+    {text:"Ti siedi su una panchina e aspetti che finisca, calmo.",sigma:true,aura:900,verdict:"ZEN",flavor:"Hai capito che non puoi controllare la pioggia. Solo te stesso."},
+    {text:"Corri verso il primo bar urlando 'oddio la pioggia!' ai passanti",sigma:false,aura:-800,verdict:"NPC PLUVIOFOBICO",flavor:"I passanti ti hanno visto. Nessuno ha detto niente."},
+    {text:"Apri l'app meteo per vedere quando finisce, ogni 3 minuti",sigma:false,aura:-400,verdict:"DIPENDENTE",flavor:"L'app ti ha risposto '70% probabilità pioggia'. Inutile."}
+  ]},
+  {tag:"— SITUAZIONE UNIVERSITARIA —",text:'Il professore fa una domanda. <strong>Nessuno risponde</strong>. Silenzio totale. Ti guarda.',
+   choices:[
+    {text:"Rispondi con sicurezza, anche se non sei al 100% sicuro.",sigma:true,aura:1700,verdict:"SIGMA",flavor:"Eri al 70%. Ma il 70% detto con certezza suona come 100%."},
+    {text:"Pausa di 3 secondi. Rispondi con una controproposta alla domanda.",sigma:true,aura:2400,verdict:"INTELLETTUALE SIGMA",flavor:"Hai ribaltato la domanda. Il professore ha preso appunti."},
+    {text:"Abbassi gli occhi e fai finta di guardare i tuoi appunti",sigma:false,aura:-800,verdict:"INVISIBILE",flavor:"Il professore ti aveva già visto. Troppo tardi."},
+    {text:"Ridi nervosamente e dici 'mah non saprei...eheh'",sigma:false,aura:-600,verdict:"CRINGE",flavor:"L'eheh è costato 400 aura da solo."}
+  ]},
+  {tag:"⚠ — EVENTO SPECIALE: IL TRENO —",text:'Sei in ritardo. Vedi il <strong>treno chiudere le porte</strong> mentre sei a 10 metri.',
+   choices:[
+    {text:"Non corri. Aspetti il prossimo con la stessa faccia.",sigma:true,aura:2000,verdict:"STOICO SIGMA",flavor:"Il treno partiva. Il tuo piano B era già pronto nella testa."},
+    {text:"Corri, prendi il treno all'ultimo secondo, entri senza fiatare.",sigma:true,aura:1200,verdict:"SIGMA ATLETICO",flavor:"Nessun fiatone. Nessuna parola. Come se fosse normale."},
+    {text:"Corri, arrivi tardi, batti le mani sulle porte chiuse davanti a tutti",sigma:false,aura:-1000,verdict:"CRINGE FERROVIARIO",flavor:"Le mani sulle porte. Il momento più visto sui social quest'anno."},
+    {text:"Ti fermi e controlli l'app per il prossimo treno ogni 30 secondi",sigma:false,aura:-500,verdict:"NPC ANSIOSO",flavor:"Il treno era partito. L'ansia no."}
+  ]},
+  {tag:"⚔ — EVENTO RARO: L'ASCENSORE —",text:'Entri in ascensore. C\'era già qualcuno. <strong>Silenzio imbarazzante</strong>. 14 piani.',
+   choices:[
+    {text:"Guardi avanti. Non dici niente. 14 piani di presenza pura.",sigma:true,aura:1800,verdict:"SIGMA",flavor:"Il silenzio era il tuo. Non suo."},
+    {text:"Tiri fuori il telefono, lo guardi senza aprire niente, resti immobile.",sigma:true,aura:900,verdict:"FREDDO",flavor:"Il telefono era solo un alibi. Eri perfettamente presente."},
+    {text:"Fai un commento sul meteo per rompere il ghiaccio",sigma:false,aura:-800,verdict:"NPC",flavor:"Il tempo era uguale a quando sei entrato. Il commento era inutile."},
+    {text:"Ridi nervosamente ogni tre piani senza motivo",sigma:false,aura:-1100,verdict:"CRINGE",flavor:"Al sesto piano lui aveva già deciso di prendere le scale la prossima volta."}
+  ]},
+  {tag:"— SITUAZIONE BIBLIOTECARIA —",text:'Hai una scadenza domani. <strong>Sono le 23:00. Non hai iniziato.</strong>',
+   choices:[
+    {text:"Inizi adesso. In silenzio. Finisci alle 3. Dormi 4 ore. Consegni.",sigma:true,aura:2200,verdict:"SIGMA",flavor:"4 ore di sonno. Consegnato. Nessuna scusa. Nessun ritardo."},
+    {text:"Prepari caffè, piano d'attacco. Inizi con metodo alle 23:15.",sigma:true,aura:1500,verdict:"STRATEGA",flavor:"Il ritardo era gestibile. Tu l'hai gestito."},
+    {text:"Mandi un'email al prof dicendo che stai male",sigma:false,aura:-1000,verdict:"CLASSICO CRINGE",flavor:"Il prof ha ricevuto 8 email identiche. La tua era la nona."},
+    {text:"Vai a dormire pensando 'la mattina sono più lucido'",sigma:false,aura:-800,verdict:"BUGIARDO",flavor:"Alle 7 di mattina non eri più lucido. Eri disperato."}
+  ]},
+  {tag:"— SITUAZIONE GELATO —",text:'Stai mangiando gelato. <strong>Cade il ciuffo</strong> sul marciapiede davanti a tutti.',
+   choices:[
+    {text:"Fissi il ciuffo a terra. Fai una foto. Vai al gelataio e ordini di nuovo.",sigma:true,aura:1300,verdict:"SIGMA",flavor:"La foto era per la memoria. Il secondo gelato era la giustizia."},
+    {text:"Lo lasci lì. Mangi il cono vuoto. Cammini via con dignità totale.",sigma:true,aura:900,verdict:"STOICO",flavor:"Il cono vuoto tenuto in mano mentre cammini? Presenza assoluta."},
+    {text:"Dici 'NOOOO' ad alta voce e guardi chi ti sta intorno",sigma:false,aura:-700,verdict:"CRINGE",flavor:"Il gelato lo sentiva arrivare. Tu no."},
+    {text:"Raccogli il ciuffo e provi a rimetterlo sul cono",sigma:false,aura:-900,verdict:"IGIENICAMENTE PERSO",flavor:"Sigma nell'animo. Non nella pratica. Sconfitto."}
+  ]},
+  {tag:"— SITUAZIONE DOMESTICA —",text:'Rompi accidentalmente qualcosa in casa di <strong>qualcun altro</strong>.',
+   choices:[
+    {text:"'Ho rotto X. Mi dispiace. Lo sostituisco.' Fine.",sigma:true,aura:1600,verdict:"SIGMA ADULTO",flavor:"Tre frasi. Una responsabilità. Nessun melodramma."},
+    {text:"Lo mostri, lo dici, offri soluzione, aspetti risposta in silenzio.",sigma:true,aura:1200,verdict:"DIRETTO",flavor:"Hai gestito la situazione prima che diventasse una situazione."},
+    {text:"Lo nascondi sperando che non se ne accorgano",sigma:false,aura:-1200,verdict:"CRINGE DOMESTICO",flavor:"Se n'è accorto. Sempre. Si accorgono sempre."},
+    {text:"Ti scusi per 20 minuti con varianti di 'mi dispiace davvero tantissimo'",sigma:false,aura:-700,verdict:"ECCESSIVO",flavor:"Al quarto 'mi dispiace' avevano già smesso di ascoltare."}
+  ]},
+  {tag:"— SITUAZIONE TELEFONICA —",text:'La tua mamma ti chiama per la <strong>quarta volta in un\'ora</strong>.',
+   choices:[
+    {text:"Rispondi alla quarta. Parli due minuti. 'Ciao mamma.' Fine.",sigma:true,aura:1000,verdict:"SIGMA CON CUORE",flavor:"Hai aspettato il momento giusto. La famiglia non si ignora, si tempestifica."},
+    {text:"Rispondi, parli, e le chiedi come sta prima che lo faccia lei.",sigma:true,aura:1500,verdict:"FIGLIO SIGMA",flavor:"Hai preso l'iniziativa emotiva. Aura familiare +1500."},
+    {text:"Non rispondi a nessuna delle quattro. Le mandi un 'ora non posso'",sigma:false,aura:-700,verdict:"CRINGE",flavor:"'Ora non posso' con quattro chiamate perse è una bugia evidente."},
+    {text:"Rispondi al primo squillo gridando 'cosa è successo??'",sigma:false,aura:-500,verdict:"NPC ANSIOSO",flavor:"Non era successo niente. Ora è tutto più complicato."}
+  ]},
+  {tag:"— SITUAZIONE MUSICALE —",text:'Le cuffie non funzionano. La tua canzone parte <strong>ad alto volume in pubblico</strong>.',
+   choices:[
+    {text:"La lasci andare qualche secondo. Non cambi espressione.",sigma:true,aura:1300,verdict:"SIGMA",flavor:"Tre secondi di musica ad alto volume in silenzio assoluto. Presenza totale."},
+    {text:"Spegni il telefono con calma. Continui quello che stavi facendo.",sigma:true,aura:800,verdict:"FREDDO",flavor:"Nessun panico. Nessuna scusa. Nessun problema."},
+    {text:"Ti alzi di scatto urlando 'NO NO NO' cercando di spegnerlo",sigma:false,aura:-800,verdict:"NPC MUSICALE",flavor:"Il volume dell'imbarazzo era più alto della canzone."},
+    {text:"Dici 'scusate, scusate' a tutta la stanza guardandoti intorno",sigma:false,aura:-600,verdict:"CRINGE",flavor:"Nessuno aveva chiesto scuse. Ora sì."}
+  ]},
+  {tag:"⚠ — EVENTO SPECIALE: IL COMPLEANNO —",text:'Dimentichi il <strong>compleanno di un amico</strong> e te lo ricordi alle 23:45.',
+   choices:[
+    {text:"Chiami adesso. 'Ho dimenticato. Sono un coglione. Buon compleanno.'",sigma:true,aura:2100,verdict:"SIGMA ONESTO",flavor:"L'onestà brutale alle 23:45 è più sigma di qualsiasi scusa."},
+    {text:"Scrivi un messaggio vero, lungo, senza usare 'ho dimenticato ma'",sigma:true,aura:1400,verdict:"SIGMA EMOTIVO",flavor:"Nessun 'ma'. Il messaggio aveva peso. L'ha sentito."},
+    {text:"Mandi 'buon compleannooo!! 🎉🎂🥳' come se l'avessi sempre saputo",sigma:false,aura:-800,verdict:"BUGIARDO",flavor:"Le tre o e le emoji non nascondono il timestamp delle 23:47."},
+    {text:"Decidi di augurargli domani sperando che non se ne accorga",sigma:false,aura:-600,verdict:"CODARDO",flavor:"Se n'è accorto. Ha visto il timestamp. Non ha detto niente. Peggio."}
+  ]},
+  {tag:"— SITUAZIONE CINEMATOGRAFICA —",text:'Al cinema qualcuno dietro di te <strong>parla durante il film</strong>.',
+   choices:[
+    {text:"Ti giri una volta sola. Contatto visivo. Tre secondi. Ti rigiri.",sigma:true,aura:1900,verdict:"SIGMA",flavor:"Non hai detto niente. Non ne avevi bisogno."},
+    {text:"Alzi leggermente la testa, non ti giri, aspetti il silenzio. Arriva.",sigma:true,aura:1300,verdict:"FREDDO",flavor:"La tua presenza ha comunicato il messaggio senza parole."},
+    {text:"Dici 'shhh!' tre volte con tono sempre più disperato",sigma:false,aura:-700,verdict:"NPC",flavor:"Lo 'shhh' ripetuto perde efficacia esponenzialmente."},
+    {text:"Ti sposti di posto mormorando scuse a tutta la fila",sigma:false,aura:-900,verdict:"RESA",flavor:"Hai ceduto il territorio. Lui ha vinto senza sforzo."}
+  ]},
+  {tag:"— SITUAZIONE LINGUISTICA —",text:'Un turista straniero ti chiede indicazioni in inglese. <strong>Non sai dove sia il posto</strong>.',
+   choices:[
+    {text:"'I don't know that place, but Google Maps will.' Lo aspetti.",sigma:true,aura:1600,verdict:"SIGMA INTERNAZIONALE",flavor:"Non hai la risposta. Ma hai una soluzione. Differenza enorme."},
+    {text:"Scrivi il nome su Google Maps, gliel mostri senza parlare.",sigma:true,aura:1100,verdict:"PRATICO SIGMA",flavor:"Azione diretta. Zero parole inutili."},
+    {text:"Dici 'eeeh, mmmh, forse... non saprei' per 2 minuti interi",sigma:false,aura:-700,verdict:"INDECISO",flavor:"Ha aspettato 2 minuti per 'non saprei'. Classico."},
+    {text:"Inventi una direzione sperando che funzioni",sigma:false,aura:-1100,verdict:"CRIMINALE",flavor:"Ha preso quella direzione. Probabilmente è ancora in giro."}
+  ]},
+  {tag:"— SITUAZIONE APERITIVO —",text:'All\'aperitivo <strong>finisce il prosecco</strong>. Il cameriere non viene.',
+   choices:[
+    {text:"Chiami il cameriere con un singolo gesto della mano. Una volta sola.",sigma:true,aura:800,verdict:"SIGMA",flavor:"Una mano alzata. Contatto visivo. Fatto."},
+    {text:"Passi all'acqua tonica come se l'avessi sempre preferita.",sigma:true,aura:1100,verdict:"FREDDO ASSOLUTO",flavor:"Il pivot era invisibile. Nessuno ha notato niente."},
+    {text:"Aspetti 25 minuti in silenzio rassegnato senza fare niente",sigma:false,aura:-500,verdict:"PASSIVO NPC",flavor:"La sete era reale. La tua iniziativa no."},
+    {text:"Chiami il cameriere 4 volte in 3 minuti con voce sempre più alta",sigma:false,aura:-800,verdict:"CAFONE",flavor:"Al terzo 'scusiii' tutto il tavolo aveva smesso di parlarti."}
+  ]},
+  {tag:"— SITUAZIONE NATALIZIA —",text:'A cena di Natale uno zio ti chiede: <strong>"allora quando ti laurei/sposi/trovi lavoro?"</strong>',
+   choices:[
+    {text:"Lo guardi. Sorridi di lato. Dici 'ci sto lavorando.' E mangi.",sigma:true,aura:1700,verdict:"SIGMA",flavor:"Hai chiuso il discorso senza chiuderlo. Arte."},
+    {text:"'Non lo so.' Pausa. 'Il tacchino è buono.' Cambio soggetto.",sigma:true,aura:2000,verdict:"MAESTRO DEL PIVOT",flavor:"La transizione era così fluida che lo zio ha dovuto concordare sul tacchino."},
+    {text:"Entri in modalità difensiva e spieghi tutti i tuoi piani nei prossimi 5 anni",sigma:false,aura:-800,verdict:"NPC",flavor:"Lo zio si è addormentato al terzo anno. Metaforicamente."},
+    {text:"Dici 'uffa sempre le stesse domande!' e crei tensione al tavolo",sigma:false,aura:-1000,verdict:"CRINGE NATALIZIO",flavor:"Hai rovinato il cenone. La nonna se ne è accorta."}
+  ]},
+  /* ═══ FINALE ═══ */
   {
-    tag: "— SITUAZIONE SOCIALE —",
-    text: 'Sei al bar. La persona davanti a te ordina l\'<strong>ultimo cornetto</strong>. Ti guarda in faccia mentre lo prende.',
-    choices: [
-      { text: "Sorridi e dici 'buon appetito'", sigma: false, aura: -400, verdict: "CRINGE", flavor: "Ha visto la tua anima. Era vuota." },
-      { text: "La fissi in silenzio per 4 secondi interi, poi ordini un caffè come se niente fosse", sigma: true, aura: 1200, verdict: "SIGMA", flavor: "Non hai detto niente. Non dovevi." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE DRAMMATICA —",
-    text: 'Il tuo amico manda un messaggio nel gruppo: <strong>"okay"</strong>. Solo "okay". Nessun punto interrogativo. Nessun contesto.',
-    choices: [
-      { text: "Rispondi 'tutto bene??' con tre punti interrogativi", sigma: false, aura: -600, verdict: "NPC", flavor: "Hai dimostrato di aver bisogno di contesto. Imbarazzante." },
-      { text: "Non rispondi. Per tre giorni.", sigma: true, aura: 800, verdict: "SIGMA", flavor: "Lui sa cosa ha fatto. Entrambi lo sapete." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE FISICA —",
-    text: 'Mentre cammini per strada cadi e <strong>lasci cadere la pizza</strong>. C\'è gente che ti guarda.',
-    choices: [
-      { text: "Ti alzi imbarazzato e lasci la pizza a terra", sigma: false, aura: -800, verdict: "CRINGE PURO", flavor: "La pizza meritava meglio. Tu no." },
-      { text: "Raccogli la pizza. Continui a camminare. La mangi.", sigma: true, aura: 2000, verdict: "ABSOLUTE MONSTER", flavor: "5 secondi rule è per i deboli. Tu non hai regole." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE LAVORATIVA —",
-    text: 'Il tuo capo ti manda una mail con scritto: <strong>"ci sentiamo"</strong>. Nessuna ora. Nessun giorno.',
-    choices: [
-      { text: "Rispondi 'quando?' con il punto interrogativo ansioso", sigma: false, aura: -500, verdict: "NPC", flavor: "Ha sentito la tua paura attraverso lo schermo." },
-      { text: "Non rispondi. Lavori come se niente fosse. Se vuole parlarti, sa dove trovarti.", sigma: true, aura: 1500, verdict: "SIGMA", flavor: "Tu non corri. Sono gli altri a correre verso di te." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE ALIMENTARE —",
-    text: 'Sono le 3 di notte. Apri il frigo. C\'è solo un <strong>uovo e mezza cipolla</strong>.',
-    choices: [
-      { text: "Chiudi il frigo, vai a dormire con la fame", sigma: false, aura: -300, verdict: "DEBOLE", flavor: "Il tuo corpo ti ha chiesto qualcosa. L'hai ignorato. Triste." },
-      { text: "Cucini. Alle 3 di notte. Da solo. Ti siedi al tavolo. Mangi in silenzio.", sigma: true, aura: 900, verdict: "SIGMA", flavor: "Gli uomini con aura non hanno orari. Hanno fame." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE RETE SOCIALE —",
-    text: 'Qualcuno ti tagga in un meme di <strong>5 anni fa</strong> dove sei in una foto imbarazzante.',
-    choices: [
-      { text: "Chiedi di rimuoverlo immediatamente in DM", sigma: false, aura: -700, verdict: "CRINGE", flavor: "L'imbarazzo che mostri crea più danni del meme." },
-      { text: "Metti un like alla foto. Poi non ci pensi più.", sigma: true, aura: 1800, verdict: "SIGMA", flavor: "Non puoi perdere la faccia se non ce l'hai mai avuta nell'equazione." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE ROMANTICA —",
-    text: 'Una persona che ti piace ti scrive <strong>"che fai stasera"</strong>.',
-    choices: [
-      { text: "\"Niente dai, sono libero/a!! Perché?? 😊\"", sigma: false, aura: -1000, verdict: "NPC ROMANTICO", flavor: "Hai risposto in 0.3 secondi. Le emoji parlano chiaro." },
-      { text: "Aspetti 2 ore. Rispondi 'perché'. Solo 'perché'.", sigma: true, aura: 2500, verdict: "AURA LORD", flavor: "Un'unica parola. Tutto il potere del mondo." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE GASTRONOMICA —",
-    text: 'Al ristorante ordini la bistecca. Il cameriere chiede <strong>"come la vuole?"</strong>',
-    choices: [
-      { text: "\"Ben cotta per favore, non mi piace il sangue!\"", sigma: false, aura: -1200, verdict: "CRINGE CULINARIO", flavor: "Hai appena perso 1200 punti aura e il rispetto dello chef." },
-      { text: "\"Al sangue.\" Pausa. \"Grazie.\"", sigma: true, aura: 1100, verdict: "SIGMA", flavor: "Due parole. Una virgola di pausa. Chef ti rispetta." }
-    ]
-  },
-  {
-    tag: "⚠ — EVENTO SPECIALE: IL GYM — ⚠",
-    text: 'Entri in palestra. C\'è un tizio che sta usando <strong>tutte le macchine contemporaneamente</strong> mettendo asciugamani. Ti guarda. Ha l\'aura di un piccolo boss locale.',
-    choices: [
-      { text: "Aspetti che finisca su una panca secondaria", sigma: false, aura: -900, verdict: "NPC DA GYM", flavor: "Lui ha vinto. Tu stai scalando la panca di plastica." },
-      { text: "Ti alleni accanto a lui senza chiedere. In silenzio. Il doppio dei pesi.", sigma: true, aura: 3000, verdict: "AURA OVERLORD", flavor: "Non hai chiesto permesso. Non ne hai bisogno." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE TECNOLOGICA —",
-    text: 'Il tuo PC esplode durante una presentazione importante. Tutti ti guardano.',
-    choices: [
-      { text: "\"Scusate, scusate, un momento, mi dispiace tanto...\"", sigma: false, aura: -800, verdict: "CRINGE TOTALE", flavor: "Hai detto scusate 3 volte. Ognuna valeva -200 aura." },
-      { text: "Fissi lo schermo nero. Fai una pausa di 5 secondi. Dici 'bene'. Continui a memoria.", sigma: true, aura: 3500, verdict: "LEGGENDARIO", flavor: "Il crash era parte del piano. Era sempre stato parte del piano." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE ECONOMICA —",
-    text: 'Al supermercato la carta viene <strong>rifiutata</strong>. C\'è la fila dietro di te.',
-    choices: [
-      { text: "Ti scusi mille volte mentre cerchi disperatamente contanti", sigma: false, aura: -600, verdict: "NPC FINANZIARIO", flavor: "La fila ti ha giudicato. Tutti. Anche il bambino di 4 anni." },
-      { text: "Guardi il POS. Guardi la cassiera. Dici 'riprovo'. Inserisci di nuovo la carta. Funziona.", sigma: true, aura: 800, verdict: "SIGMA", flavor: "Calmo. Sempre calmo. L'aura non si perde per un POS." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE ESISTENZIALE —",
-    text: 'Sono le 4 di mattina. Non riesci a dormire. Pensi a una cosa imbarazzante che hai detto <strong>nel 2017</strong>.',
-    choices: [
-      { text: "Ti rigiri nel letto per 3 ore in agonia", sigma: false, aura: -1500, verdict: "NPC ESISTENZIALE", flavor: "2017 ti sta ancora vivendo affitto gratis nella testa." },
-      { text: "Ti alzi. Bevi acqua. Pensi: 'quella persona non esiste più'. Ti addormenti.", sigma: true, aura: 2200, verdict: "SIGMA MENTALE", flavor: "Chi eri nel 2017 è irrilevante. Sei un essere di aura ora." }
-    ]
-  },
-  {
-    tag: "⚔ — EVENTO RARO: IL CONFRONTO —",
-    text: 'Un tizio con un\'<strong>aura enorme</strong> ti fissa dall\'altro lato della stanza. Non dice niente. Aspetta.',
-    choices: [
-      { text: "Abbassi lo sguardo e ti allontani", sigma: false, aura: -2000, verdict: "SCONFITTO", flavor: "Ha vinto senza muovere un muscolo. L'aura era troppo." },
-      { text: "Lo fissi per esattamente 7 secondi. Poi annuisci leggermente. E ti giri.", sigma: true, aura: 4000, verdict: "AURA DUEL WIN", flavor: "Nessuno ha parlato. Tutto è stato detto. Rispetto." }
-    ]
-  },
-  {
-    tag: "— SITUAZIONE CULINARIA —",
-    text: 'Cucini la pasta. La assaggi. <strong>Non è abbastanza salata</strong>. Il sale è in fondo alla cucina.',
-    choices: [
-      { text: "La mangi così, insipida, per non ricuocerla", sigma: false, aura: -400, verdict: "RASSEGNATO", flavor: "Hai accettato la mediocrità sul piatto. E nella vita." },
-      { text: "Ti alzi. Prendi il sale. La sali. La rimetti sul fuoco 30 secondi. La mangi perfetta.", sigma: true, aura: 700, verdict: "SIGMA", flavor: "I pigri accettano. Le aura monster correggono." }
-    ]
-  },
-  {
-    tag: "✦ — MOMENTO FINALE: LE SCALE —",
-    text: 'Hai farmato abbastanza aura. È il momento. Davanti a te ci sono <strong>delle scale</strong>.\n\nSai cosa ti aspetta in cima.',
-    isStairs: true,
-    choices: [
-      { text: "Scendi e torni a casa. Non sei pronto.", sigma: false, aura: -5000, verdict: "VIGLIACCHERIA", flavor: "Le scale ti hanno vinto senza che tu mettessi un piede." },
-      { text: "Sali. Un gradino alla volta. In silenzio assoluto.", sigma: true, aura: 9999, verdict: "AURA MONSTER", flavor: "Hai affrontato la sua aura. E la tua era più grande.", isWin: true }
+    tag:"✦ — IL MOMENTO. LE SCALE. —",
+    isStairs:true,
+    text:'Hai farmato abbastanza aura. Lo sai. Lo senti nelle ossa.\n\nDavanti a te ci sono <strong>delle scale</strong>.\n\nNon sai quante siano. Sai solo che in cima c\'è qualcosa con un\'aura che fa tremare l\'aria intorno.',
+    choices:[
+      {text:"Sali. Un gradino alla volta. In silenzio assoluto.",sigma:true,aura:9999,verdict:"AURA MONSTER",flavor:"Hai affrontato la sua aura. La tua era più grande.",isWin:true},
+      {text:"Inspiri, aspetti che la tua aura si stabilizzi, poi sali.",sigma:true,aura:7500,verdict:"AURA LORD",flavor:"La pazienza prima della salita. Tattica da veterano.",isWin:true},
+      {text:"Guardi le scale. Decidi che oggi non è il giorno. Torni domani.",sigma:false,aura:-3000,verdict:"VIGLIACCERIA",flavor:"Le scale ti aspetteranno. Ma la tua aura no."},
+      {text:"Corri su di slancio senza sentirti pronto, senza ascoltare l'aura.",sigma:false,aura:-2000,verdict:"IMPULSIVO",flavor:"Sei arrivato in cima senza aura. Vuoto. Sconfitto."}
     ]
   }
 ];
 
-let gameState = {
-  aura: 0,
-  round: 1,
-  sigma: 0,
-  cringe: 0,
-  usedScenarios: [],
-  gameOver: false,
-  finalScenario: false
-};
+let gs={aura:0,round:1,sigma:0,cringe:0,queue:[],gameOver:false};
 
-function getRank(aura) {
-  return RANKS.find(r => aura >= r.min && aura < r.max) || RANKS[RANKS.length - 1];
+function buildQueue(){
+  const normal=POOL.filter(s=>!s.isStairs);
+  const stairs=POOL.find(s=>s.isStairs);
+  const shuffled=normal.sort(()=>Math.random()-0.5).slice(0,15);
+  return [...shuffled,stairs];
 }
 
-function updateDisplay() {
-  const num = document.getElementById('auraNumber');
-  const rank = document.getElementById('auraRank');
-  const display = document.getElementById('auraDisplay');
-  const bar = document.getElementById('progressBar');
+function getRank(a){return RANKS.find(r=>a>=r.min&&a<r.max)||RANKS[RANKS.length-1];}
 
-  num.textContent = gameState.aura.toLocaleString();
-  const r = getRank(gameState.aura);
-  rank.textContent = r.label;
-  rank.style.color = r.cls === 'elite' ? 'var(--gold)' : r.cls === 'negative' ? 'var(--red)' : 'var(--purple-bright)';
-  num.className = 'aura-number ' + r.cls;
-  display.className = 'aura-display ' + r.cls;
-  bar.className = 'progress-bar ' + r.cls;
-
-  const progress = Math.min(100, Math.max(5, (gameState.aura / 15000) * 100));
-  bar.style.width = Math.abs(progress) + '%';
-
-  document.getElementById('statRound').textContent = gameState.round;
-  document.getElementById('statSigma').textContent = gameState.sigma;
-  document.getElementById('statCringe').textContent = gameState.cringe;
+function updateHUD(){
+  const r=getRank(gs.aura);
+  document.getElementById('auraNum').textContent=gs.aura.toLocaleString('it-IT');
+  document.getElementById('auraNum').className='aura-num '+(r.cls||'');
+  document.getElementById('auraRank').textContent=r.label;
+  document.getElementById('auraRank').style.color=r.cls==='elite'?'var(--gold)':r.cls==='neg'?'var(--red)':'var(--purple-bright)';
+  const box=document.getElementById('auraBox');
+  box.className='aura-box '+(r.cls||'');
+  const pct=Math.min(100,Math.max(2,(gs.aura/20000)*100));
+  const bar=document.getElementById('progBar');
+  bar.style.width=pct+'%';
+  bar.className='prog-bar '+(r.cls||'');
+  document.getElementById('stRound').textContent=gs.round;
+  document.getElementById('stSigma').textContent=gs.sigma;
+  document.getElementById('stCringe').textContent=gs.cringe;
 }
 
-function spawnPopup(text, type, x, y) {
-  const container = document.getElementById('popupContainer');
-  const el = document.createElement('div');
-  el.className = 'popup ' + type;
-  el.textContent = text;
-  el.style.left = x + 'px';
-  el.style.top = y + 'px';
-  container.appendChild(el);
-  setTimeout(() => el.remove(), 1500);
+function spawnPopup(text,cls,x,y){
+  const el=document.createElement('div');
+  el.className='popup '+cls;
+  el.textContent=text;
+  el.style.left=x+'px';
+  el.style.top=y+'px';
+  document.getElementById('popupLayer').appendChild(el);
+  setTimeout(()=>el.remove(),1700);
 }
 
-function getNextScenario() {
-  if (gameState.round >= 15 || gameState.usedScenarios.includes(scenarios.length - 1)) {
-    const stairsScenario = scenarios.find(s => s.isStairs);
-    if (!stairsScenario.used) {
-      stairsScenario.used = true;
-      return stairsScenario;
-    }
-  }
-
-  const available = scenarios
-    .map((s, i) => ({ s, i }))
-    .filter(({ s, i }) => !gameState.usedScenarios.includes(i) && !s.isStairs);
-
-  if (available.length === 0) {
-    const stairsIdx = scenarios.findIndex(s => s.isStairs);
-    if (!gameState.usedScenarios.includes(stairsIdx)) return scenarios[stairsIdx];
-    return null;
-  }
-
-  const pick = available[Math.floor(Math.random() * available.length)];
-  gameState.usedScenarios.push(pick.i);
-  return pick.s;
-}
-
-function showScenario(scenario) {
-  const card = document.getElementById('scenarioCard');
-  const tag = document.getElementById('scenarioTag');
-  const text = document.getElementById('scenarioText');
-  const choices = document.getElementById('choicesContainer');
-  const result = document.getElementById('resultDisplay');
-
-  result.className = 'result-display';
-
-  tag.textContent = scenario.tag;
-  tag.className = scenario.isStairs ? 'scenario-tag stairs-tag' : 'scenario-tag';
-  text.innerHTML = scenario.text.replace(/\n/g, '<br>');
-  card.className = scenario.isStairs ? 'scenario-card stairs' : 'scenario-card';
-
-  choices.innerHTML = '';
-  scenario.choices.forEach((choice, idx) => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn' + (scenario.isStairs ? ' stairs-choice' : '');
-    btn.innerHTML = `<span class="choice-label">Scelta ${String.fromCharCode(65 + idx)}</span>${choice.text}`;
-    btn.onclick = (e) => makeChoice(choice, e);
-    choices.appendChild(btn);
+function showScenario(s){
+  document.getElementById('resultBox').className='result';
+  document.getElementById('stairsSeq').className='stairs-seq';
+  const card=document.getElementById('mainCard');
+  card.style.display='';
+  card.className=s.isStairs?'card stairs-card':'card';
+  const tag=document.getElementById('cardTag');
+  tag.textContent=s.tag;
+  tag.className=s.isStairs?'card-tag gold':'card-tag';
+  document.getElementById('cardText').innerHTML=s.text.replace(/\n/g,'<br>');
+  const box=document.getElementById('choicesBox');
+  box.innerHTML='';
+  const mixed=[...s.choices].sort(()=>Math.random()-0.5);
+  mixed.forEach((c,i)=>{
+    const btn=document.createElement('button');
+    btn.className='choice'+(s.isStairs?' sc':'');
+    btn.innerHTML=`<span class="choice-lbl">Scelta ${String.fromCharCode(65+i)}</span>${c.text}`;
+    btn.onclick=(e)=>pick(c,e);
+    box.appendChild(btn);
   });
-
-  window.currentScenario = scenario;
 }
 
-async function makeChoice(choice, e) {
-  const rect = e.target.getBoundingClientRect();
-  const px = rect.left + rect.width / 2;
-  const py = rect.top;
-
-  document.getElementById('choicesContainer').innerHTML = '';
-
-  if (choice.sigma) {
-    gameState.sigma++;
-    spawnPopup('+' + choice.aura.toLocaleString(), choice.aura > 3000 ? 'big' : 'gain', px, py);
-  } else {
-    gameState.cringe++;
-    spawnPopup(choice.aura.toLocaleString(), 'lose', px, py);
+async function pick(choice,e){
+  document.getElementById('choicesBox').innerHTML='';
+  const rect=e.currentTarget.getBoundingClientRect();
+  const px=rect.left+rect.width/2;
+  const py=rect.top;
+  if(choice.sigma){
+    gs.sigma++;
+    spawnPopup('+'+choice.aura.toLocaleString('it-IT'),choice.aura>5000?'huge':'gain',px,py);
+  }else{
+    gs.cringe++;
+    spawnPopup(choice.aura.toLocaleString('it-IT'),'lose',px,py);
   }
-
-  if (choice.isWin) {
-    gameState.aura += choice.aura;
-    await showStairsSequence();
-    setTimeout(() => showWin(), 500);
+  gs.aura+=choice.aura;
+  updateHUD();
+  if(choice.isWin){
+    document.getElementById('mainCard').style.display='none';
+    await runStairs(true);
+    showEnd(true);
     return;
   }
-
-  gameState.aura += choice.aura;
-  updateDisplay();
-
-  if (gameState.aura <= -8000) {
-    showLoss();
+  if(!choice.sigma&&choice.aura<=-2000){
+    document.getElementById('auraBox').classList.add('shake');
+    setTimeout(()=>document.getElementById('auraBox').classList.remove('shake'),500);
+  }
+  if(gs.aura<=-9000){showEnd(false);return;}
+  if(choice.isStairs&&!choice.isWin){
+    document.getElementById('mainCard').style.display='none';
+    await runStairs(false);
+    showEnd(false);
     return;
   }
-
   showResult(choice);
 }
 
-function showResult(choice) {
-  const result = document.getElementById('resultDisplay');
-  const verdict = document.getElementById('resultVerdict');
-  const change = document.getElementById('resultAuraChange');
-  const flavor = document.getElementById('resultFlavor');
+function showResult(choice){
+  const box=document.getElementById('resultBox');
+  const v=document.getElementById('rVerdict');
+  v.textContent=choice.verdict;
+  v.className='r-verdict '+(choice.sigma?(choice.aura>5000?'g':'s'):'c');
+  const delta=document.getElementById('rDelta');
+  delta.textContent=(choice.aura>=0?'+':'')+choice.aura.toLocaleString('it-IT')+' aura';
+  delta.style.color=choice.aura>=0?'var(--purple-bright)':'var(--red)';
+  document.getElementById('rFlavor').textContent='"'+choice.flavor+'"';
+  box.className='result show';
+}
 
-  verdict.textContent = choice.verdict;
-  verdict.className = 'result-verdict ' + (choice.sigma ? (choice.aura > 3000 ? 'god' : 'sigma') : 'cringe');
-  change.textContent = (choice.aura >= 0 ? '+' : '') + choice.aura.toLocaleString() + ' aura';
-  change.style.color = choice.aura >= 0 ? 'var(--purple-bright)' : 'var(--red)';
-  flavor.textContent = '"' + choice.flavor + '"';
+function nextRound(){
+  gs.round++;
+  gs.queue.shift();
+  if(gs.queue.length===0){showEnd(gs.aura>0);return;}
+  showScenario(gs.queue[0]);
+}
 
-  result.className = 'result-display visible';
+async function runStairs(won){
+  document.getElementById('mainCard').style.display='none';
+  document.getElementById('resultBox').className='result';
+  const seq=document.getElementById('stairsSeq');
+  seq.className='stairs-seq show';
+  const block=document.getElementById('stairsBlock');
+  block.innerHTML='';
 
-  if (!choice.sigma) {
-    document.getElementById('auraDisplay').classList.add('shake');
-    setTimeout(() => document.getElementById('auraDisplay').classList.remove('shake'), 500);
+  const lines=won?[
+    {t:"Vedi le scale.",p:1300},
+    {t:"Non sai quante siano.",p:1400},
+    {t:"Non importa.",p:1900,c:"em"},
+    {t:"Inizi a salire.",p:1300},
+    {t:"Un gradino.",p:900},
+    {t:"Due gradini.",p:900},
+    {t:"Tre gradini.",p:1100},
+    {t:"L'aria si fa densa. Qualcosa cambia intorno a te.",p:1800},
+    {t:"Senti la sua aura.",p:1500,c:"em"},
+    {t:"È pesante come una cattedrale. È dentro ogni centimetro di questo posto.",p:2200},
+    {t:"Qualcuno con meno aura si sarebbe fermato.",p:1800},
+    {t:"Si sarebbe girato.",p:1200},
+    {t:"Avrebbe trovato una scusa.",p:1400},
+    {t:"Avrebbe detto a se stesso: &ldquo;domani&rdquo;.",p:1600},
+    {t:"Tu no.",p:2200,c:"big"},
+    {t:"Continui a salire.",p:1400},
+    {t:"Un altro gradino. Poi un altro.",p:1200},
+    {t:"La sua aura spinge — ma la tua tiene.",p:1800},
+    {t:"Perché non si tratta di non avere paura.",p:1900,c:"pur"},
+    {t:"Si tratta di salire anche quando ce l'hai.",p:2200,c:"pur"},
+    {t:"Si tratta di non fermarsi mai.",p:2000,c:"em"},
+    {t:"Le scale finiscono.",p:1600,c:"em"},
+    {t:"Sei arrivato.",p:1500},
+    {t:"L'aura monster ti guarda.",p:1800},
+    {t:"E abbassa lo sguardo.",p:2800,c:"big"},
+    {t:"Perché la vera aura non è quella di chi fa paura agli altri.",p:2200,c:"pur"},
+    {t:"È quella di chi sale comunque.",p:2000,c:"em"},
+    {t:"Un gradino alla volta.",p:1600,c:"sm"},
+    {t:"Sempre.",p:3000,c:"sm"},
+  ]:[
+    {t:"Vedi le scale.",p:1300},
+    {t:"Inizi a salire.",p:1400},
+    {t:"Ma senti già la sua aura.",p:1600,c:"red"},
+    {t:"Ed è più grande della tua.",p:2000,c:"red"},
+    {t:"Ti fermi.",p:1800},
+    {t:"Ti giri.",p:1400},
+    {t:"Scendi.",p:1800,c:"red"},
+    {t:"Le scale sono ancora lì.",p:1600},
+    {t:"Ma non aspetteranno per sempre.",p:2000,c:"sm"},
+  ];
+
+  for(const line of lines){
+    const span=document.createElement('span');
+    span.className='sl '+(line.c||'');
+    span.innerHTML=line.t;
+    block.appendChild(span);
+    await delay(80);
+    span.classList.add('vis');
+    await delay(line.p||1100);
   }
+  await delay(1200);
 }
 
-function nextScenario() {
-  gameState.round++;
-  const next = getNextScenario();
-  if (!next) {
-    showWin();
-    return;
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function showEnd(won){
+  document.getElementById('stairsSeq').className='stairs-seq';
+  document.getElementById('mainCard').style.display='none';
+  document.getElementById('resultBox').className='result';
+  const end=document.getElementById('endScreen');
+  end.className=won?'end show':'end show bad';
+  if(won){
+    document.getElementById('endTitle').textContent='AURA MONSTER';
+    document.getElementById('endArt').innerHTML='⚡ &nbsp;&nbsp;&nbsp; ⚡<br>( ◣_◢ )<br>&nbsp;|████|<br>/|████|\\<br>&nbsp;SIGMA';
+    document.getElementById('endSub').textContent='hai raggiunto il picco dell\'aura umana';
+  }else{
+    document.getElementById('endTitle').textContent='AURA MORTA';
+    document.getElementById('endArt').innerHTML='( ×_× )<br>&nbsp;|____|<br>game over';
+    document.getElementById('endSub').textContent='la tua aura non esiste più';
   }
-  showScenario(next);
+  document.getElementById('endStats').innerHTML=
+    `Aura finale: <span style="color:${won?'var(--gold)':'var(--red)'}">${gs.aura.toLocaleString('it-IT')}</span><br>`+
+    `Mosse sigma: <span style="color:var(--purple-bright)">${gs.sigma}</span> &nbsp;|&nbsp; `+
+    `Fallimenti: <span style="color:var(--red)">${gs.cringe}</span><br>`+
+    `<br><em style="font-size:12px;color:var(--muted)">${won
+      ? 'Le scale non ti hanno fermato. L\'aura parlava per te.'
+      : 'Nessuno ricorderà il tuo nome. Letteralmente nessuno.'
+    }</em>`;
 }
 
-async function showStairsSequence() {
-  document.getElementById('scenarioCard').style.display = 'none';
-  const seq = document.getElementById('stairsSequence');
-  seq.className = 'stairs-sequence visible';
-
-  const steps = ['ss1', 'ss2', 'ss3', 'ss4', 'ss5', 'ss6', 'ss7', 'ss8'];
-  for (const id of steps) {
-    await new Promise(r => setTimeout(r, 900));
-    document.getElementById(id).className = 'stairs-step visible';
-  }
-  await new Promise(r => setTimeout(r, 1500));
+function restart(){
+  gs={aura:0,round:1,sigma:0,cringe:0,queue:buildQueue(),gameOver:false};
+  document.getElementById('endScreen').className='end';
+  document.getElementById('mainCard').style.display='';
+  updateHUD();
+  showScenario(gs.queue[0]);
 }
 
-function showWin() {
-  document.getElementById('scenarioCard').style.display = 'none';
-  document.getElementById('resultDisplay').className = 'result-display';
-  document.getElementById('stairsSequence').className = 'stairs-sequence';
-
-  const end = document.getElementById('endScreen');
-  end.className = 'endscreen visible';
-  end.style.borderColor = 'var(--gold)';
-
-  document.getElementById('endTitle').textContent = 'AURA MONSTER';
-  document.getElementById('monsterArt').innerHTML =
-    `⚡ &nbsp;&nbsp;&nbsp;&nbsp; ⚡<br>` +
-    `&nbsp;&nbsp;( ◣_◢ )<br>` +
-    `&nbsp;&nbsp; |████|<br>` +
-    `&nbsp;/|████|\\<br>` +
-    `&nbsp; SIGMA FORM`;
-  document.getElementById('endSubtitle').textContent = 'hai raggiunto il picco dell\'aura umana';
-  document.getElementById('endStats').innerHTML =
-    `Aura finale: <span style="color:var(--gold)">${gameState.aura.toLocaleString()}</span><br>` +
-    `Mosse sigma: <span style="color:var(--purple-bright)">${gameState.sigma}</span> &nbsp;|&nbsp; ` +
-    `Fallimenti cringe: <span style="color:var(--red)">${gameState.cringe}</span><br>` +
-    `<br><em style="font-size:12px;color:var(--muted)">Le scale non ti hanno fermato. L'aura parlava per te.</em>`;
-}
-
-function showLoss() {
-  document.getElementById('scenarioCard').style.display = 'none';
-  document.getElementById('resultDisplay').className = 'result-display';
-
-  const end = document.getElementById('endScreen');
-  end.className = 'endscreen visible';
-  end.style.borderColor = 'var(--red)';
-
-  document.getElementById('endTitle').style.color = 'var(--red)';
-  document.getElementById('endTitle').textContent = 'AURA MORTA';
-  document.getElementById('monsterArt').innerHTML =
-    `&nbsp;&nbsp;( ×_× )<br>` +
-    `&nbsp;&nbsp; |____|<br>` +
-    `&nbsp;game over`;
-  document.getElementById('endSubtitle').textContent = 'la tua aura non esiste più';
-  document.getElementById('endStats').innerHTML =
-    `Aura finale: <span style="color:var(--red)">${gameState.aura.toLocaleString()}</span><br>` +
-    `Sei diventato un <span style="color:var(--red)">NPC di background</span>.<br>` +
-    `<br><em style="font-size:12px;color:var(--muted)">Nessuno ricorderà il tuo nome. Letteralmente nessuno.</em>`;
-}
-
-function restartGame() {
-  gameState = { aura: 0, round: 1, sigma: 0, cringe: 0, usedScenarios: [], gameOver: false };
-  scenarios.forEach(s => { delete s.used; });
-  document.getElementById('endScreen').className = 'endscreen';
-  document.getElementById('scenarioCard').style.display = '';
-  document.getElementById('stairsSequence').className = 'stairs-sequence';
-  document.getElementById('endTitle').style.color = 'var(--gold)';
-  updateDisplay();
-  showScenario(getNextScenario());
-}
-
-// INIT
-updateDisplay();
-showScenario(getNextScenario());
+gs.queue=buildQueue();
+updateHUD();
+showScenario(gs.queue[0]);
 </script>
 </body>
 </html>
