@@ -1,4 +1,4 @@
 # [Play Aura Monster Simulator](https://raw.githack.com/DavideFocalors79/AuraMonster/refs/heads/main/aura_monster.html)
 All’inizio parti con un’aura debole e neutra. Ogni piano presenta una scelta: aiutare o sfruttare, rischiare o restare al sicuro, distruggere o comprendere. Non esiste una scelta “giusta” universale—ogni decisione modifica il tipo di aura che sviluppi. Puoi diventare, ad esempio, un’entità carismatica e luminosa, oppure una presenza instabile e oscura che domina gli altri, sali le scale e farma AURA.
 # Play Aura Monster on your phone!!!!
-<img width="700" height="700" alt="AuraMonster" src="https://github.com/user-attachments/assets/0bc6cc9e-af30-416e-b5de-0edd619264f3" />
+<img width="200" height="200" alt="AuraMonster" src="https://github.com/user-attachments/assets/0bc6cc9e-af30-416e-b5de-0edd619264f3" />
